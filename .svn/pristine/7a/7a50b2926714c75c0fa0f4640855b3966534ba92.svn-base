@@ -1,0 +1,226 @@
+package com.hsc.textandris.scheduler;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+
+import android.app.Service;
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Binder;
+import android.os.IBinder;
+import android.provider.ContactsContract;
+import android.util.Log;
+
+import com.hsc.textandris.communication.SmsHelper;
+import com.hsc.textandris.constants.IConstants.ALARM_MANAGER_CONSTANTS;
+import com.hsc.textandris.constants.IConstants.REPEAT_CONSTANTS;
+import com.hsc.textandris.data.SmsData;
+import com.hsc.textandris.data.SmsStorageData;
+import com.hsc.textandris.db.DatabaseHelper;
+
+/**
+ * This is the service to send the SMSes. This is virtually the action house of the app
+ * @author Ankur
+ *
+ */
+public class SchedulerService extends Service {
+	private static final String TAG = "SchedulerService";
+	
+	private final IBinder mBinder = new MyBinder();
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		
+		Log.d(TAG, "Scheduler onStartCommand()");
+		
+		//Query database
+		processDatabaseForSmses();
+		
+		
+		return Service.START_NOT_STICKY;
+	}
+	
+	public synchronized void processDatabaseForSmses(){
+		long currentTime = System.currentTimeMillis();
+		
+		Log.d(TAG, "currentTime : "+ currentTime);
+		
+		//millis
+		long timeGapAllowed =  ALARM_MANAGER_CONSTANTS.MIN_ALLOWABLE_TIME_INTERVAL  * 60 * 1000 /2;
+		
+		Log.d(TAG, "timeGapAllowed : "+ timeGapAllowed);
+		
+		DatabaseHelper dbHelper = DatabaseHelper.getInstance(getBaseContext());
+		dbHelper.open();
+		
+		List<SmsStorageData> smsDataList = dbHelper.readAll();
+		
+		int counter = -1;
+		
+		//Traverse all smses and search which has had the time to send
+		EachElement : for(SmsStorageData currentDataElement : smsDataList){
+			counter ++;
+			if(!currentDataElement.isActive){
+				continue EachElement;
+			}
+			
+			Log.d(TAG, "Element "+ counter +" nextRepeatTime : "+ currentDataElement.nextRepeatTime);
+			
+			do{
+				if(Math.abs(currentTime - currentDataElement.nextRepeatTime) < timeGapAllowed){
+					Log.d(TAG, "Element "+ counter +" Inside if");
+					
+					Cursor cursor;
+					
+					List<String> uidList = Arrays.asList(currentDataElement.uniqueIDs.split("\\s*,\\s*"));
+					
+					//Send Sms
+					SmsData smsData = new SmsData();
+					
+					//Read the contacts to get the toNumbers
+					for(String uid : uidList){
+						ContentResolver cr = this.getContentResolver();
+						cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+								, new String[]{ContactsContract.CommonDataKinds.Phone._ID,ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,ContactsContract.CommonDataKinds.Phone.NUMBER},
+								ContactsContract.CommonDataKinds.Phone._ID+" =?" , new String[]{uid},
+								ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
+								+ " ASC");
+						if (cursor != null && cursor.getCount()>0){
+							cursor.moveToFirst();
+
+							String number = cursor.getString(cursor
+									.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+
+							smsData.toNumbers += number+",";
+						}else{
+							continue ;
+
+						}
+
+					}
+					
+					smsData.message = currentDataElement.messageContent;
+
+					//Send the queried data to sms helper for sending
+					SmsHelper.getInstance().sendMessage(smsData);
+
+					//Recalculate nextRepeatTime
+					Calendar cal = Calendar.getInstance();
+					cal.setTimeInMillis(currentDataElement.nextRepeatTime);
+
+					switch (currentDataElement.repeatFactor) {
+					case REPEAT_CONSTANTS.ONCE:
+
+						break;
+
+					case REPEAT_CONSTANTS.HOURLY:
+						cal.add(Calendar.HOUR_OF_DAY, 1);
+						break;
+
+					case REPEAT_CONSTANTS.DAILY:
+						cal.add(Calendar.DATE, 1);
+						break;
+					case REPEAT_CONSTANTS.WEEKLY:
+						cal.add(Calendar.DATE, 7);
+						break;
+					case REPEAT_CONSTANTS.MONTHLY:
+						cal.add(Calendar.MONTH, 1);
+						break;
+					case REPEAT_CONSTANTS.YEARLY:
+						cal.add(Calendar.YEAR, 1);
+						break;
+
+					default:
+						break;
+					}
+					
+					cal.set(Calendar.MILLISECOND, 0);
+					
+
+					//Check for schedule feasibility
+					if(cal.getTimeInMillis() > currentDataElement.endTime){
+						currentDataElement.isActive = false;
+					}else{
+						currentDataElement.nextRepeatTime = cal.getTimeInMillis();
+					}
+					
+					if(currentDataElement.repeatFactor == REPEAT_CONSTANTS.ONCE){
+						currentDataElement.isActive = false;
+						currentDataElement.nextRepeatTime = currentDataElement.startTime;
+					}
+
+					//Rescedule Sms
+					dbHelper.update(currentDataElement);
+					
+					continue EachElement;
+
+				}else if(currentDataElement.nextRepeatTime < currentTime && currentDataElement.isRepeat){
+					Log.d(TAG, "Element "+ counter +" Inside else-if 1");
+					//Recalculate nextRepeatTime
+					Calendar cal = Calendar.getInstance();
+					cal.setTimeInMillis(currentDataElement.nextRepeatTime);
+
+					switch (currentDataElement.repeatFactor) {
+					case REPEAT_CONSTANTS.ONCE:
+
+						break;
+
+					case REPEAT_CONSTANTS.HOURLY:
+						cal.add(Calendar.HOUR_OF_DAY, 1);
+						break;
+
+					case REPEAT_CONSTANTS.DAILY:
+						cal.add(Calendar.DATE, 1);
+						break;
+					case REPEAT_CONSTANTS.WEEKLY:
+						cal.add(Calendar.DATE, 7);
+						break;
+					case REPEAT_CONSTANTS.MONTHLY:
+						cal.add(Calendar.MONTH, 1);
+						break;
+					case REPEAT_CONSTANTS.YEARLY:
+						cal.add(Calendar.YEAR, 1);
+						break;
+
+					default:
+						break;
+					}
+					cal.set(Calendar.MILLISECOND, 0);
+					currentDataElement.nextRepeatTime = cal.getTimeInMillis();
+					//Check for schedule feasibility
+					if(cal.getTimeInMillis() > currentDataElement.endTime || currentDataElement.repeatFactor == REPEAT_CONSTANTS.ONCE){
+						currentDataElement.isActive = false;
+					}
+					//Rescedule Sms
+					dbHelper.update(currentDataElement);
+
+				}else if(currentDataElement.nextRepeatTime < currentTime && !currentDataElement.isRepeat){
+					Log.d(TAG, "Element "+ counter +" Inside else-if 2");
+					currentDataElement.isActive = false;
+					dbHelper.update(currentDataElement);
+				}else{
+					continue EachElement;
+				}
+			}while(currentDataElement.isActive && currentDataElement.isRepeat && (currentDataElement.nextRepeatTime < currentTime));
+		}//Endof for EachElement
+		
+		dbHelper.close();
+	}
+	
+
+	@Override
+	public IBinder onBind(Intent arg0) {
+		return mBinder;
+	}
+
+	public class MyBinder extends Binder {
+		SchedulerService getService() {
+			return SchedulerService.this;
+		}
+	}
+
+
+} 

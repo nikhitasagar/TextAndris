@@ -1,0 +1,31 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+>
+<android.support.v4.view.ViewPager 
+    android:id="@+id/pager"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/background"
+    tools:context="com.hsc.textandris.MainActivity" />
+
+<RelativeLayout android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:gravity="bottom|center">
+       
+	   		
+       
+        	<ImageButton 
+        	android:id="@+id/add_button"
+        	android:layout_width="100dp"
+	        android:layout_height="100dp"
+	        android:scaleType="fitCenter"
+	        android:onClick="add"
+	        android:background="@null"
+	        android:src="@drawable/button_add"
+	        android:paddingBottom="@dimen/activity_vertical_margin"
+    		android:paddingTop="@dimen/activity_vertical_margin" 
+	        />
+        
+   		</RelativeLayout> </RelativeLayout> 

@@ -1,0 +1,270 @@
+package com.hsc.textandris.db;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import com.hsc.textandris.constants.IConstants.DB_FIELDS;
+import com.hsc.textandris.constants.IConstants.REPEAT_CONSTANTS;
+import com.hsc.textandris.data.SmsStorageData;
+
+/**
+ * Turning this to singleton. DB should be singleton!!!
+ * @author Ankur
+ *
+ */
+public class DatabaseHelper {
+	private static final String DATABASE_NAME = "textandris.db";
+	private static final String TABLE_NAME = "smsScheduleTable";
+	private static final String KEY_ID = "id";
+	
+	private static DatabaseHelper mInstance = null;
+	
+	private DBOpenHelper mDbHelper;
+	private SQLiteDatabase db;
+	private final Context mContext;
+
+	private DatabaseHelper(Context context){
+		mContext = context;
+		mDbHelper = new DBOpenHelper(mContext,DATABASE_NAME,null,1);
+	}
+	
+	public static synchronized DatabaseHelper getInstance(Context context){
+		if(mInstance == null){
+			mInstance = new DatabaseHelper(context);
+		}
+		return mInstance;
+	}
+	
+	/**
+	 * To be called before any read/write operation
+	 * @throws SQLiteException
+	 */
+	public void open() throws SQLiteException{
+		db = mDbHelper.getWritableDatabase();
+	}
+	
+	/**
+	 * Not to be called loosely. Really, almost should never be called!!! 
+	 */
+	public void dropDatabase(){
+		mContext.deleteDatabase(DATABASE_NAME);
+	}
+	
+	/**
+	 * The first time this is called. This is also an example how update() function can be called!!!
+	 * @param SmsStorageData
+	 * @return
+	 */
+	public long create(SmsStorageData dbElement){
+		long currentTime = System.currentTimeMillis();
+		if(dbElement.startTime < currentTime || dbElement.startTime> dbElement.endTime||
+				dbElement.uniqueIDs == null || dbElement.uniqueIDs.trim().equals("")){
+			return -1;
+		}
+		
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(DB_FIELDS.TO_NAMES, dbElement.toNames);
+		contentValues.put(DB_FIELDS.TO_NUMBERS, dbElement.toNumbers);
+		contentValues.put(DB_FIELDS.UNIQUE_IDS, dbElement.uniqueIDs);
+		contentValues.put(DB_FIELDS.MESSAGE_CONTENT, dbElement.messageContent);
+		contentValues.put(DB_FIELDS.START_TIME, dbElement.startTime);
+		contentValues.put(DB_FIELDS.END_TIME, dbElement.endTime);
+		contentValues.put(DB_FIELDS.TIMEZONE, dbElement.timezone);
+		
+		if(dbElement.repeatFactor == REPEAT_CONSTANTS.ONCE){
+			dbElement.isRepeat = false;
+		}else{
+			dbElement.isRepeat = true;
+		}
+		
+		//Boolean stored as integer
+		if(dbElement.isRepeat){
+			contentValues.put(DB_FIELDS.IS_REPEAT, 1);
+			
+		}else{
+			contentValues.put(DB_FIELDS.IS_REPEAT, 0);
+		}
+		
+		//During insertion, start time and next_repeat_time are same
+		contentValues.put(DB_FIELDS.NEXT_REPEAT_TIME, dbElement.startTime);
+		contentValues.put(DB_FIELDS.REPEAT_FACTOR, dbElement.repeatFactor);
+		
+		
+		contentValues.put(DB_FIELDS.IS_ACTIVE, 1);
+		 System.out.println("data saved");
+		return db.insert(TABLE_NAME, null, contentValues);
+	}
+	
+	/**
+	 * To be implemented
+	 */
+	public List<SmsStorageData> readAll(){
+		List<SmsStorageData> databaseContent = new ArrayList<SmsStorageData>();
+		
+		String[] result_columns = new String[]{KEY_ID, DB_FIELDS.TO_NAMES,DB_FIELDS.TO_NUMBERS,DB_FIELDS.UNIQUE_IDS, DB_FIELDS.MESSAGE_CONTENT,
+				DB_FIELDS.START_TIME,DB_FIELDS.END_TIME,DB_FIELDS.TIMEZONE,DB_FIELDS.IS_ACTIVE,DB_FIELDS.IS_REPEAT,DB_FIELDS.REPEAT_FACTOR,
+				DB_FIELDS.NEXT_REPEAT_TIME};
+		Cursor allRows = db.query(true,TABLE_NAME, result_columns, null, null, null, null,DB_FIELDS.START_TIME,null);
+		
+		if (allRows.getCount() > 0) {
+			while (allRows.moveToNext()) {
+				SmsStorageData dbElement = new SmsStorageData();
+				dbElement.id = allRows.getInt(allRows.getColumnIndex(KEY_ID));
+				dbElement.toNames = allRows.getString(allRows.getColumnIndex(DB_FIELDS.TO_NAMES));
+				dbElement.toNumbers = allRows.getString(allRows.getColumnIndex(DB_FIELDS.TO_NUMBERS));
+				dbElement.uniqueIDs = allRows.getString(allRows.getColumnIndex(DB_FIELDS.UNIQUE_IDS));
+				dbElement.messageContent = allRows.getString(allRows.getColumnIndex(DB_FIELDS.MESSAGE_CONTENT));
+				dbElement.startTime = allRows.getLong(allRows.getColumnIndex(DB_FIELDS.START_TIME));
+				dbElement.endTime = allRows.getLong(allRows.getColumnIndex(DB_FIELDS.END_TIME));
+				dbElement.timezone = allRows.getInt(allRows.getColumnIndex(DB_FIELDS.TIMEZONE));
+				dbElement.isActive = (allRows.getInt(allRows.getColumnIndex(DB_FIELDS.IS_ACTIVE)) == 1);
+				dbElement.isRepeat = (allRows.getInt(allRows.getColumnIndex(DB_FIELDS.IS_REPEAT)) == 1);
+				dbElement.repeatFactor = allRows.getInt(allRows.getColumnIndex(DB_FIELDS.REPEAT_FACTOR));
+				dbElement.nextRepeatTime = allRows.getLong(allRows.getColumnIndex(DB_FIELDS.NEXT_REPEAT_TIME));
+				
+				databaseContent.add(dbElement);
+			}
+		}
+		
+		return databaseContent;
+	}
+	
+	/**
+	 * To be implemented
+	 */
+	public SmsStorageData readThis(int elementId){
+		String[] result_columns = new String[]{KEY_ID, DB_FIELDS.TO_NAMES,DB_FIELDS.TO_NUMBERS,DB_FIELDS.UNIQUE_IDS, DB_FIELDS.MESSAGE_CONTENT,
+				DB_FIELDS.START_TIME,DB_FIELDS.END_TIME,DB_FIELDS.TIMEZONE,DB_FIELDS.IS_ACTIVE,DB_FIELDS.IS_REPEAT,DB_FIELDS.REPEAT_FACTOR,
+				DB_FIELDS.NEXT_REPEAT_TIME};
+		Cursor allRows = db.query(true,TABLE_NAME, result_columns, KEY_ID+" =?" , new String[]{Integer.toString(elementId)},
+				null, null,DB_FIELDS.START_TIME,null);
+		
+		SmsStorageData dbElement = new SmsStorageData();
+		dbElement.id = -1;
+		
+		if (allRows.getCount() > 0) {
+			if (allRows.moveToFirst()) {
+				
+				dbElement.id = allRows.getInt(allRows.getColumnIndex(KEY_ID));
+				dbElement.toNames = allRows.getString(allRows.getColumnIndex(DB_FIELDS.TO_NAMES));
+				dbElement.toNumbers = allRows.getString(allRows.getColumnIndex(DB_FIELDS.TO_NUMBERS));
+				dbElement.uniqueIDs = allRows.getString(allRows.getColumnIndex(DB_FIELDS.UNIQUE_IDS));
+				dbElement.messageContent = allRows.getString(allRows.getColumnIndex(DB_FIELDS.MESSAGE_CONTENT));
+				dbElement.startTime = allRows.getLong(allRows.getColumnIndex(DB_FIELDS.START_TIME));
+				dbElement.endTime = allRows.getLong(allRows.getColumnIndex(DB_FIELDS.END_TIME));
+				dbElement.timezone = allRows.getInt(allRows.getColumnIndex(DB_FIELDS.TIMEZONE));
+				dbElement.isActive = (allRows.getInt(allRows.getColumnIndex(DB_FIELDS.IS_ACTIVE)) == 1);
+				dbElement.isRepeat = (allRows.getInt(allRows.getColumnIndex(DB_FIELDS.IS_REPEAT)) == 1);
+				dbElement.repeatFactor = allRows.getInt(allRows.getColumnIndex(DB_FIELDS.REPEAT_FACTOR));
+				dbElement.nextRepeatTime = allRows.getLong(allRows.getColumnIndex(DB_FIELDS.NEXT_REPEAT_TIME));
+				
+				
+			}
+		}
+		
+		return dbElement;
+	}
+	
+	public boolean update(SmsStorageData dbElement){
+		if(dbElement.startTime> dbElement.endTime || 
+				dbElement.uniqueIDs == null || dbElement.uniqueIDs.trim().equals("") ||
+				dbElement.id<0){
+			return false;
+		}
+		
+		
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(DB_FIELDS.TO_NAMES, dbElement.toNames);
+		contentValues.put(DB_FIELDS.TO_NUMBERS, dbElement.toNumbers);
+		contentValues.put(DB_FIELDS.UNIQUE_IDS, dbElement.uniqueIDs);
+		contentValues.put(DB_FIELDS.MESSAGE_CONTENT, dbElement.messageContent);
+		contentValues.put(DB_FIELDS.START_TIME, dbElement.startTime);
+		contentValues.put(DB_FIELDS.END_TIME, dbElement.endTime);
+		contentValues.put(DB_FIELDS.TIMEZONE, dbElement.timezone);
+		
+		//Boolean stored as integer
+		if(dbElement.isActive){
+			contentValues.put(DB_FIELDS.IS_ACTIVE, 1);
+		}else{
+			contentValues.put(DB_FIELDS.IS_ACTIVE, 0);
+		}
+		
+		contentValues.put(DB_FIELDS.REPEAT_FACTOR, dbElement.repeatFactor);
+		
+		if(dbElement.repeatFactor == REPEAT_CONSTANTS.ONCE){
+			dbElement.isRepeat = false;
+		}else{
+			dbElement.isRepeat = true;
+		}
+		
+		//Boolean stored as integer
+		if(dbElement.isRepeat){
+			contentValues.put(DB_FIELDS.IS_REPEAT, 1);
+			
+		}else{
+			contentValues.put(DB_FIELDS.IS_REPEAT, 0);
+		}
+		
+		if(dbElement.nextRepeatTime >= dbElement.startTime){
+			//During insertion, start time and next_repeat_time are same
+			contentValues.put(DB_FIELDS.NEXT_REPEAT_TIME, dbElement.nextRepeatTime);
+		}
+		
+		String where = KEY_ID+"="+dbElement.id;
+		
+		return db.update(TABLE_NAME, contentValues, where, null)>0;
+	}
+
+	public boolean delete(int id){
+		String where = KEY_ID+"="+id;
+		return db.delete(TABLE_NAME, where, null)>0;
+	}
+	
+	/**
+	 * Call before the application is destroyed. Must call this
+	 */
+	public void close(){
+		db.close();
+	}	
+	
+	/**
+	 * This is the mandatory class for creating the database
+	 * @author Ankur
+	 *
+	 */
+	private static class DBOpenHelper extends SQLiteOpenHelper{
+
+		private static final String DATABASE_CREATE = "create table if not exists "+TABLE_NAME+" " +
+				"("+KEY_ID+" integer primary key autoincrement, " + DB_FIELDS.TO_NAMES + " text, " + DB_FIELDS.TO_NUMBERS + " text, " 
+				+ DB_FIELDS.UNIQUE_IDS + " text not null, "+
+				DB_FIELDS.MESSAGE_CONTENT + " text, " + DB_FIELDS.START_TIME + " integer not null, "+
+				DB_FIELDS.END_TIME + " integer not null, " + DB_FIELDS.TIMEZONE + " integer, " +
+				DB_FIELDS.IS_ACTIVE + " integer not null DEFAULT 1, " + DB_FIELDS.IS_REPEAT + " integer not null DEFAULT 0, " +
+				DB_FIELDS.REPEAT_FACTOR + " integer, " + DB_FIELDS.NEXT_REPEAT_TIME + " integer);";
+
+		public DBOpenHelper(Context context, String name,
+				CursorFactory factory, int version) {
+			super(context, name, factory, version);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+			db.execSQL(DATABASE_CREATE);
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			db.execSQL("DROP TABLE IF EXISTS "+DATABASE_NAME);
+			onCreate(db);
+		}
+
+	}
+}

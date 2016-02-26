@@ -1,0 +1,186 @@
+
+<LinearLayout 
+ xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
+    android:weightSum="5"
+    tools:context="com.hsc.textandris.NewMessage$PlaceholderFragment" 
+    android:focusableInTouchMode="true">
+    
+    <!--  Row Item (Contact) -->
+	    <LinearLayout 
+ android:gravity="center_vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="0dp"
+	    android:orientation="horizontal" 
+	    android:layout_weight ="1" >
+		    <ImageView
+		        android:id="@+id/image_to"
+		        android:layout_width="60dp"
+		        android:layout_height="60dp"
+		        android:src="@drawable/person" />
+		    
+		    <com.hsc.textandris.contacts.ContactsEditText
+		        android:id="@+id/to"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:layout_margin="7dp"
+		        android:paddingLeft="14dp"
+		        android:minHeight="48dp" android:minWidth="0dp"
+		        android:hint="@string/hint_to"
+		        android:inputType="textCapWords"
+		        android:textSize="18sp"
+		        />
+    	</LinearLayout>
+    	
+	    
+	<!--  Row Item (Message) -->
+	    <LinearLayout 
+ android:gravity="center_vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="0dp"
+	    android:orientation="horizontal" 
+	    android:layout_weight ="1">
+		    <ImageView
+		        android:id="@+id/image_message"
+		        android:layout_width="60dp"
+		        android:layout_height="60dp"
+		        android:src="@drawable/message" />
+		    
+		    <EditText
+		        android:id="@+id/message"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:layout_margin="7dp"
+		        android:minHeight="48dp" android:minWidth="0dp"
+		        android:hint="@string/hint_message" 
+		        android:inputType="textMultiLine|textCapSentences"
+		        android:scrollbarStyle="outsideOverlay"
+		        android:maxLines="4"
+		        android:paddingLeft="14dp"
+		        android:gravity="top|left"
+		        android:scrollbars="vertical"
+		        android:textSize="18sp"/>
+    	</LinearLayout>
+    	
+
+	    <!--  Row Item (Interval) -->
+	   <LinearLayout 
+ android:gravity="center_vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="0dip"
+	    android:orientation="horizontal" 
+	    android:layout_weight="1">
+		    <ImageView
+		        android:id="@+id/image_interval"
+		        android:layout_width="60dp"
+		        android:layout_height="60dp"
+		        android:src="@drawable/interval" />
+		   <Button
+		        android:id="@+id/interval"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:minHeight="48dp" android:minWidth="0dp"
+		        android:layout_margin="7dp"
+		        android:paddingLeft="14dp"
+		        android:text="@string/hint_interval"
+		        android:textColor="@color/spinner_hint_text" 
+		        style="?android:attr/spinnerStyle"
+		        android:textSize="18sp" />
+		  
+    	</LinearLayout>
+	 <!--  Row Item (Date) -->
+	   <LinearLayout 
+ android:gravity="center_vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="0dp"
+	    android:orientation="horizontal" 
+	    android:layout_weight ="1">
+		    <ImageView
+		        android:id="@+id/image_date"
+		        android:layout_width="60dp"
+		        android:layout_height="60dp"
+		        android:src="@drawable/date" />
+		    <Button
+		        android:id="@+id/start_date"
+		        android:layout_width="0dip"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:layout_margin="7dp"
+		        android:paddingLeft="14dp"
+		        android:minHeight="48dp" android:minWidth="0dp"
+		        android:text="@string/start_date"
+		        android:textColor="@color/spinner_hint_text"
+		        android:textSize="18sp"
+		        style="?android:attr/spinnerStyle"
+		        android:onClick="showDatePickerDialog"/>
+		    <Button
+		        android:id="@+id/end_date"
+		        android:layout_width="0dip"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:layout_margin="7dp"
+		        android:paddingLeft="14dp"
+		        android:minHeight="48dp" android:minWidth="0dp"
+		        android:text="@string/end_date"
+		        android:visibility="gone"
+		        android:textColor="@color/spinner_hint_text"
+		        android:textSize="18sp"
+		        style="?android:attr/spinnerStyle"
+		        android:onClick="showDatePickerDialog"/>
+    	</LinearLayout>
+    	
+
+	  
+	 <!--  Row Item (Time) -->
+	    <LinearLayout 
+ android:gravity="center_vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="0dp"
+	    android:orientation="horizontal" 
+	    android:layout_weight="1">
+		    <ImageView
+		        android:id="@+id/image_time"
+		        android:layout_width="60dp"
+		        android:layout_height="60dp"
+		        android:src="@drawable/time" />
+		    
+		    <Button
+		        android:id="@+id/start_time"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:minHeight="48dp" android:minWidth="0dp"
+		        android:layout_margin="7dp"
+		        android:paddingLeft="14dp"
+		        android:text="@string/start_time"
+		        android:textColor="@color/spinner_hint_text" 
+		        style="?android:attr/spinnerStyle"
+		        android:textSize="18sp"
+		        android:onClick="showTimePickerDialog"/>
+		    <Button
+		        android:id="@+id/end_time"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="1"
+		        android:minHeight="48dp" android:minWidth="0dp"
+		        android:layout_margin="7dp"
+		        android:paddingLeft="14dp"
+		        android:text="@string/end_time"
+		        android:visibility="gone"
+		        android:textColor="@color/spinner_hint_text" 
+		        style="?android:attr/spinnerStyle"
+		        android:textSize="18sp"
+		        android:onClick="showTimePickerDialog"/>
+    	</LinearLayout>
+    	
+	   
+	    
+</LinearLayout>

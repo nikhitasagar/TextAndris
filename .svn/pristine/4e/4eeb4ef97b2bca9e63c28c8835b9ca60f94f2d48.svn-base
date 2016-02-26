@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hsc.textandris"
+    android:versionCode="1"
+    android:versionName="1.0" >
+   
+   <uses-sdk android:minSdkVersion="8"
+         />
+    
+    
+  <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
+    <application
+        android:icon="@drawable/li_fff"
+        android:label="@string/appname" >
+        <activity
+            android:name=".SplashScreen"
+            android:screenOrientation="portrait"
+            android:label="@string/appname" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.hsc.textandris.ui.TextAndrisMainScreen"
+            android:excludeFromRecents="true"
+             android:screenOrientation="portrait"
+            android:label="@string/TextAndrisMainScreen"
+            android:launchMode="singleTask" >
+        </activity>
+        <activity
+            android:name="com.hsc.textandris.ui.NewMessage"
+            android:windowSoftInputMode="adjustPan"
+         android:screenOrientation="portrait"
+            android:excludeFromRecents="true"
+            android:label="@string/new_message" />
+        
+         
+        <activity
+            android:name="com.hsc.textandris.ui.AboutText"
+            android:excludeFromRecents="true"
+            android:label="@string/about"
+             android:screenOrientation="portrait"
+            android:launchMode="singleTask" >
+        </activity>
+          <activity
+            android:name=".contacts.ContactList"
+            android:excludeFromRecents="true"
+            android:label="@string/contacts"
+             android:screenOrientation="portrait"
+             >
+        </activity>
+         <activity
+             
+            android:name="com.hsc.textandris.ui.LogsLayout"
+            android:excludeFromRecents="true"
+            android:label="@string/logs"
+             android:screenOrientation="portrait"
+            android:launchMode="singleTask" >
+        </activity>
+        
+        
+          <activity
+            android:name="com.hsc.textandris.ui.Scheduler"
+            android:excludeFromRecents="true"
+            android:label="@string/schedule"
+             android:screenOrientation="portrait" >
+        </activity>
+         <activity
+            android:name="com.hsc.textandris.ui.TimeZone_data"
+            android:theme="@android:style/Theme.Dialog"
+            android:excludeFromRecents="true"
+            android:label="@string/time_zone"
+             android:screenOrientation="portrait"
+            android:launchMode="singleTask" >
+        </activity>
+          <activity
+            android:name="com.hsc.textandris.ui.frequency"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Dialog"
+            android:label="@string/frequency"
+             android:screenOrientation="portrait"
+            android:launchMode="singleTask" >
+        </activity>
+      
+         <activity
+            android:name="com.hsc.textandris.ui.log.Logs"
+            android:excludeFromRecents="true"
+            android:label="@string/logs"
+             android:screenOrientation="portrait"
+            android:launchMode="singleTask" >
+        </activity>
+
+		  <service
+            android:name="com.hsc.textandris.scheduler.SchedulerService"
+            android:process=":textandris_scheduler"
+            android:label="SchedulerService" >
+        </service>
+
+        <receiver android:name="com.hsc.textandris.scheduler.MyScheduleReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.hsc.textandris.scheduler.MyStartServiceReceiver" >
+        </receiver>
+   </application>
+
+</manifest>

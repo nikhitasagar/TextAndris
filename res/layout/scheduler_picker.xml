@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/startTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/startTimePicker"
+        android:layout_alignBottom="@+id/startTimePicker"
+        android:layout_marginLeft="70dp"
+        android:layout_toRightOf="@+id/startTimePicker"
+        android:text="@string/time" />
+
+    <Button
+        android:id="@+id/startTimePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/startDatePicker"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/start_time" /> 
+
+    <TextView
+        android:id="@+id/startDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/startTime"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="42dp"
+        android:text="@string/date" />
+
+    <Button
+        android:id="@+id/startDatePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/startDate"
+        android:layout_alignBottom="@+id/startDate"
+        android:layout_alignRight="@+id/startTimePicker"
+        android:background="@drawable/start_date" />
+
+   
+    <ImageButton
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="14dp"
+        android:background="@drawable/savebutton"
+        android:onClick="saveMessage" />
+
+    <TextView
+        android:id="@+id/endDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/endDatePicker"
+        android:layout_alignBottom="@+id/endDatePicker"
+        android:layout_alignLeft="@+id/startTime"
+        android:text="@string/date" />
+
+    <Button
+        android:id="@+id/endDatePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/startTimePicker"
+        android:layout_alignRight="@+id/startTimePicker"
+        android:layout_below="@+id/startTimePicker"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/end_date" />
+
+    <TextView
+        android:id="@+id/endTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"      
+        android:layout_alignBaseline="@+id/endTimePicker"
+        android:layout_alignBottom="@+id/endTimePicker"
+        android:layout_toRightOf="@+id/endTimePicker"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="70dp"
+        android:text="@string/time" />
+    
+   
+    <Button
+        android:id="@+id/endTimePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/endDatePicker"
+        android:layout_below="@+id/endDatePicker"
+        android:layout_toLeftOf="@+id/startTime"
+        android:background="@drawable/end_time" />
+
+    <Spinner
+        android:id="@+id/frequency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/endTimePicker"
+        android:layout_marginTop="18dp"
+        android:layout_marginRight="10dp"
+        android:layout_toRightOf="@+id/endTimePicker"
+    />
+
+    <TextView
+        android:id="@+id/frequency_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/endTimePicker"
+        android:layout_alignTop="@+id/frequency"
+        android:layout_marginLeft="16dp"
+        android:text="@string/frequency_"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</RelativeLayout>

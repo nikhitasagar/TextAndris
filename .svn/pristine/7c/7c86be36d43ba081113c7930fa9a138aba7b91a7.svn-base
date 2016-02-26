@@ -1,0 +1,180 @@
+package com.hsc.textandris.ui.log;
+
+
+
+import java.util.ArrayList;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.hsc.textandris.R;
+import com.hsc.textandris.data.SmsStorageData;
+import com.hsc.textandris.db.DatabaseHelper;
+import com.hsc.textandris.ui.NewMessage;
+
+public class CustomListAdapter extends BaseAdapter {
+	 
+    private ArrayList<LogsItem> listData;
+    private  int count = 0;
+    private Button discardBtn;
+    private ArrayList<LogsItem> selectedDeleteList;
+    private Context mContext;
+    private static final int REQUEST_CODE = 9;
+
+ 
+    private LayoutInflater layoutInflater;
+ 
+    public CustomListAdapter(Context context, ArrayList<LogsItem> listData, Button btn, ArrayList<LogsItem> selectedDeleteList) {
+    	this.mContext = context;
+    	this.listData = listData;
+        layoutInflater = LayoutInflater.from(context);
+        discardBtn = btn;
+        this.selectedDeleteList = selectedDeleteList;
+    }
+ 
+    @Override
+    public int getCount() {
+        return listData.size();
+    }
+ 
+    @Override
+    public Object getItem(int position) {
+        return listData.get(position);
+    }
+ 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+ 
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            convertView = layoutInflater.inflate(R.layout.log_list_row_layout, null);
+            holder = new ViewHolder();
+            holder.nameView = (TextView) convertView.findViewById(R.id.name);
+            holder.repeatView = (TextView) convertView.findViewById(R.id.repeat);
+            holder.occurrenceView = (TextView) convertView.findViewById(R.id.occurrence);
+            holder.reportedDateView = (TextView) convertView.findViewById(R.id.date);
+            holder.sentView = (TextView) convertView.findViewById(R.id.sent);
+           // holder.edit = (Button) convertView.findViewById(R.id.edit);
+            holder.selectedCheckBox = (CheckBox) convertView.findViewById(R.id.check);
+            holder.msgView = (TextView) convertView.findViewById(R.id.msg);
+            holder.edit = (Button)convertView.findViewById(R.id.edit);
+ 			
+          /*  holder.edit.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View v) 
+	            {
+	            	
+	            	Intent mIntent = new Intent(mContext,
+							NewMessage.class);	
+	            	//mContext.startActivity(mIntent);
+	            	mIntent.putExtra("editList", listData);
+	            	mContext.startActivity(mIntent);
+	            	//startActivityForResult(mIntent, REQUEST_CODE);
+				
+	            }
+            });*/
+            
+            
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        holder.selectedCheckBox.setSelected(false);
+        holder.selectedCheckBox.setChecked(false);
+        
+        holder.selectedCheckBox.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+            	CheckBox cb = (CheckBox)v;
+            	
+            	if (cb.isChecked()) {
+            		count++;
+            		
+            		selectedDeleteList.add((LogsItem)listData.get(position));
+            	
+            	}
+            	else
+            	{
+            		count--;            		
+            		selectedDeleteList.remove((LogsItem)listData.get(position));			
+            	
+            	}
+            	if (count == 0){
+            		//Logs.disable = true;
+            		discardBtn.setBackgroundResource(R.drawable.discard_grey_xl);
+            	} else{
+            		//Logs.enable = true;
+            		discardBtn.setBackgroundResource(R.drawable.discard_xl);
+            	}
+          
+            }
+        });
+        
+        holder.edit.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				
+				
+				Intent mIntent = new Intent(mContext, NewMessage.class);	
+            	//mContext.startActivity(mIntent);
+				DatabaseHelper dbHelper = DatabaseHelper.getInstance(mContext);
+				dbHelper.open();
+				SmsStorageData smsStorageElement = dbHelper.readThis(listData.get(position).getId());
+				dbHelper.close();
+				if(smsStorageElement.id < 1){
+					Toast.makeText(mContext, "Item Can not be edited",
+							Toast.LENGTH_SHORT).show();		
+				}else{
+					mIntent.putExtra("editElement", smsStorageElement);
+	            	((Activity)mContext).startActivityForResult(mIntent, 100);
+				}
+				
+            	
+            	//startActivityForResult(mIntent, REQUEST_CODE);
+			}
+		});
+        
+        holder.nameView.setText(listData.get(position).getName());
+        holder.repeatView.setText(" "+listData.get(position).getRepeat());  
+        holder.reportedDateView.setText(""+listData.get(position).getDate());
+        holder.msgView.setText(listData.get(position).getMessageText());
+
+        if(!listData.get(position).isActive()){
+        	holder.occurrenceView.setText("Sent");
+        	holder.reportedDateView.setText("");
+        }else{
+        	holder.occurrenceView.setText("Next Occurrence :");
+        }
+ 
+        return convertView;
+    }
+ 
+    protected void startActivityForResult(Intent mIntent, int requestCode) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	static class ViewHolder {
+        TextView nameView;
+        TextView repeatView;
+        TextView occurrenceView;
+        TextView sentView;
+        TextView reportedDateView;
+        TextView msgView;
+        CheckBox selectedCheckBox;
+        Button edit;
+    }
+ 
+}

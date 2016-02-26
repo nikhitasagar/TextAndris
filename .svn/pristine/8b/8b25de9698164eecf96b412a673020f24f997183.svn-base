@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, SplashScreen!</string>
+    <string name="appname">TextAndris</string>
+    <string name="TextAndrisMainScreen">TextAndris</string>
+    <string name="new_message">Compose Message</string>
+    <string name="about">About</string> 	
+ 	 <string name="logs">Logs</string>
+ 	  <string name="news">New</string>
+ 	      <string name="name">Name</string>
+    <string name="to">To:</string> 
+  <string name="schedule">SCHEDULE</string> 
+  <string name="send">Send</string> 
+    <string name="phone_number">Phone Number</string>
+    <string name="text">Type your message here...</string> 
+ 	   <string name="app_name">About</string>
+ 	 
+ 	   	 <string name="change_the_date">Change the date</string>
+    <string name="change_date">Change Date</string>
+    <string name="change_time">Change Time</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+ 	 
+ 	   	<string name="contacts">Contacts</string>
+ 	 
+ 	   	<string name="clear_logs">Clear Logs</string>
+ 	 
+ 	   	<string name="sent">Sent</string>
+ 	 
+ 	   	<string name="pending">Pending</string>
+ 	 
+ 	   	<string name="text_message">first six words of message...</string>
+ 	 
+ 	   	<string name="start">Start</string>
+ 	 
+ 	   	<string name="stop">Stop</string>
+ 	 
+ 	   	<string name="time_zone">Time Zone</string>
+ 	 
+ 	   	<string name="repeat">Repeat</string>
+ 	 
+ 	   	<string name="edit">Edit</string>
+ 	 
+ 	   	<string name="time_zones">Time Zones</string>
+ 	 	<string name="frequency">Frequency</string>
+ 	  	   	
+ 	   	 <string name="Choose_Frequency">Choose a Frequency</string>
+ 	   	
+
+        <string name="frequency_">"Frequency: "</string>
+
+    
+ 	   	
+
+</resources>

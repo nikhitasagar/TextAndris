@@ -1,0 +1,85 @@
+package com.hsc.textandris.ui;
+
+
+
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.ImageView;
+
+import com.hsc.textandris.R;
+import com.hsc.textandris.R.drawable;
+import com.hsc.textandris.R.id;
+import com.hsc.textandris.R.layout;
+import com.hsc.textandris.scheduler.MyScheduleReceiver;
+
+
+
+
+public class SplashScreen extends Activity {
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.splash);
+
+ /*
+         * Start the broadcast of alarms. Although they are started at boot-complete, we can refresh them as well
+         */
+        Intent startAlarm = new Intent(this, MyScheduleReceiver.class);
+        sendBroadcast(startAlarm);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+        
+
+        Thread mSplashThread = null;
+        final ImageView splashImageView = (ImageView) findViewById(R.id.SplashImageView);
+	//	final TextView splashtextView = (TextView) findViewById(R.id.SplashTextView);
+		splashImageView.setBackgroundResource(R.drawable.splash_special);
+		
+		// The thread to wait for splash screen events
+		mSplashThread = new Thread() 
+		{
+
+			@Override
+			public void run() {
+				try {
+					synchronized (this) {
+						// Wait given period of time or exit on touch
+						wait(2000);
+					}
+				} catch (InterruptedException ex) {
+					
+				}
+				
+				// launch the main screen activity
+				Intent mIntent = new Intent(getBaseContext(),
+						TextAndrisMainScreen.class);
+				startActivity(mIntent);	        
+				finish();
+				// Run next activity
+
+			}
+		
+		};
+		mSplashThread.start();
+    }
+    
+}

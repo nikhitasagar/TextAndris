@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tab_text">#505050</color>
+    <color name="background">#eeeeee</color>
+    <color name="spinner_hint_text">#808080</color>
+    <color name="black">#000000</color>
+    <color name="divide">#d6d6d6</color>
+    
+    
+    <color name="elv_btn_pressed">#ff33b5e5</color>
+	<color name="elv_btn_focused">#ff0099cc</color>
+	<color name="elv_btn_normal">#00000000</color>
+
+	<color name="elv_popup_bg_color">#EE666666</color>
+	<color name="elv_separator_color">#BBBBBB</color>
+	<color name="elv_popup_text_color">#FFFFFF</color>
+	
+	<color name="white">#fff</color> 
+  <color name="red">#F70E0E</color> 
+  <color name="blue">#0F41A5</color> 
+  <color name="green">#079624</color> 
+  <color name="orange">#FFFF8040</color> 
+  <color name="White">#FFFFFFFF</color> 
+  <color name="text_color_default">#00000C</color> 
+  <color name="text_color_inverse">#FFFFFF</color> 
+  <color name="list_row_default_bg">#ffffff</color> 
+  <color name="list_row_pressed_bg">#008cef</color> 
+  <color name="list_row_selected_bg">#86d3f6</color> 
+	
+</resources>

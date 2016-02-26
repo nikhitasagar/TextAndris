@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+  <LinearLayout
+      android:id="@+id/newbutton"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:orientation="horizontal" >
+
+      <ImageButton
+          android:id="@+id/NEW"
+          android:layout_width="125dp"
+          android:layout_height="135dp"
+          android:layout_marginLeft="10dp"
+          android:layout_marginTop="30dp"
+          android:layout_weight="0.42"
+          android:background="@drawable/composebutton"
+          android:onClick="newMessage" />
+
+  </LinearLayout>
+
+       <LinearLayout
+           android:id="@+id/logbutton"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:gravity="right"
+           android:orientation="horizontal" >
+
+           <ImageButton
+               android:id="@+id/LOGS"
+               android:layout_width="140dp"
+               android:layout_height="135dp"
+               android:layout_marginLeft="15dp"
+               android:layout_marginRight="0dp"
+               android:layout_weight="0.68"
+               android:background="@drawable/logsbutton"
+               android:onClick="logLayout" />
+
+       </LinearLayout>
+
+       <LinearLayout
+           android:id="@+id/aboutbutton"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:orientation="horizontal" >
+
+           <ImageButton
+               android:id="@+id/ABOUT"
+               android:layout_width="wrap_content"
+               android:layout_height="135dp"
+               android:layout_marginLeft="20dp"
+               android:layout_weight="4.20"
+               android:background="@drawable/aboutbutton"
+               android:onClick="aboutMessage" />
+       </LinearLayout>
+
+   </LinearLayout>   
